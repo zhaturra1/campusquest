@@ -9,9 +9,16 @@ use App\Http\Controllers\MissionController;
 use App\Http\Controllers\TeamController;
 use App\Http\Controllers\PortfolioController;
 
+// =========================================================================
+// AUTH & SSO KAMPUS TERPADU (Landing / Login Page)
+// =========================================================================
 Route::get('/', function () {
-    return redirect('/dashboard');
-});
+    return view('auth.login');
+})->name('home');
+
+Route::get('/login', function () {
+    return view('auth.login');
+})->name('login');
 
 // =========================================================================
 // EPIC 1: Manajemen Pengajuan & Validasi Misi (PIC: Nayla - 103032400078)

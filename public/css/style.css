@@ -1,0 +1,27 @@
+/* ==========================================================================
+   Visual & UI Guidelines: CampusQuest ("Clean & Soft UI")
+   Kelompok 5 — Telkom University
+   ========================================================================== */
+
+body {
+    font-family: 'Inter', sans-serif;
+    background-color: #FAFAFA;
+}
+
+.rounded-4 {
+    border-radius: 1rem !important; /* 16px */
+}
+
+.rounded-5 {
+    border-radius: 1.5rem !important; /* 24px */
+}
+
+.bg-soft-gradient {
+    background: linear-gradient(135deg, #f3f4ff 0%, #f9f5ff 100%);
+    border: 1px solid #e5e0fa;
+}
+
+.sidebar-custom {
+    background-color: #F1F3F4;
+    border-radius: 1.5rem;
+}
