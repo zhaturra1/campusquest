@@ -12,12 +12,8 @@ use Illuminate\Support\Facades\Hash;
 
 class DatabaseSeeder extends Seeder
 {
-    /**
-     * Seed the application's database with Kelompok 5 data.
-     */
     public function run(): void
     {
-        // 1. Seed Users (6 Anggota Kelompok 5 + 1 Admin Kampus)
         $usersData = [
             [
                 'nim' => '103032400001',
@@ -91,7 +87,6 @@ class DatabaseSeeder extends Seeder
             ]));
         }
 
-        // 2. Seed Badges (Epic 2 - Nathasya)
         $badgesData = [
             ['name' => 'Pemula Kampus', 'icon' => '🌱', 'description' => 'Menyelesaikan misi pertama di CampusQuest', 'min_xp' => 100],
             ['name' => 'Aktif Seminar', 'icon' => '🎤', 'description' => 'Rajin mengikuti seminar nasional & workshop', 'min_xp' => 500],
@@ -104,11 +99,9 @@ class DatabaseSeeder extends Seeder
             $badges[] = Badge::create($b);
         }
 
-        // Berikan badge ke user pertama & kedua sebagai contoh
         $createdUsers[0]->badges()->attach([$badges[0]->id, $badges[1]->id, $badges[2]->id, $badges[3]->id]);
         $createdUsers[1]->badges()->attach([$badges[0]->id, $badges[1]->id, $badges[2]->id]);
 
-        // 3. Seed Missions (Epic 4 - Naira)
         $missionsData = [
             [
                 'title' => 'Seminar Nasional AI & Cyber Security',
@@ -162,7 +155,6 @@ class DatabaseSeeder extends Seeder
             $missions[] = Mission::create($m);
         }
 
-        // 4. Seed Submissions (Epic 1 - Nayla & Epic 6 - Fathur)
         Submission::create([
             'user_id' => $createdUsers[0]->id,
             'mission_id' => $missions[0]->id,
@@ -197,11 +189,10 @@ class DatabaseSeeder extends Seeder
             'status' => 'Menunggu',
         ]);
 
-        // 5. Seed Teams (Epic 5 - Anggita)
         $team1 = Team::create([
             'name' => 'Kelompok 5 WebPro',
             'quest_target' => 'Lomba Hackathon Inovasi Kampus',
-            'leader_id' => $createdUsers[2]->id, // Anggita
+            'leader_id' => $createdUsers[2]->id,
             'total_xp' => 4500,
             'progress_percent' => 85,
         ]);
@@ -212,7 +203,7 @@ class DatabaseSeeder extends Seeder
         $team2 = Team::create([
             'name' => 'Tel-U Cyber Squad',
             'quest_target' => 'Bakti Sosial Desa Binaan Pangalengan',
-            'leader_id' => $createdUsers[5]->id, // Syadira
+            'leader_id' => $createdUsers[5]->id,
             'total_xp' => 3800,
             'progress_percent' => 65,
         ]);

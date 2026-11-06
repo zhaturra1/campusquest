@@ -5,12 +5,11 @@
     <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
     <meta name="csrf-token" content="{{ csrf_token() }}"/>
     <meta content="web_dashboard" name="shell-type"/>
-    <title>@yield('title', 'CampusQuest') — Portal Gamifikasi & Portofolio Mahasiswa</title>
+    <title>@yield('title', 'CampusQuest') | Portal Gamifikasi &amp; Portofolio Mahasiswa</title>
     <link href="https://fonts.googleapis.com" rel="preconnect"/>
     <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet"/>
-    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/>
-    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&display=swap" rel="stylesheet"/>
     <link href="{{ asset('css/style.css') }}" rel="stylesheet"/>
     <style>
         @layer base {
@@ -36,7 +35,7 @@
                         "surface-variant": "#e1e3e4",
                         "surface-container-highest": "#e1e3e4",
                         "on-primary-fixed-variant": "#4029ba",
-                        "badge-violet": "#6C5CE7",
+                        "badge-violet": "#5341CD",
                         "on-primary-container": "#faf6ff",
                         "inverse-primary": "#c6bfff",
                         "tertiary-container": "#0074c9",
@@ -52,7 +51,7 @@
                         "on-surface": "#191c1d",
                         "tertiary-fixed-dim": "#a2c9ff",
                         "on-secondary-container": "#661a86",
-                        "badge-emerald": "#00B894",
+                        "badge-emerald": "#047857",
                         "on-error": "#ffffff",
                         "surface-container": "#eceeef",
                         "pastel-lavender-start": "#F3F4FF",
@@ -61,7 +60,7 @@
                         "pastel-lavender-end": "#F9F5FF",
                         "on-tertiary-container": "#f6f8ff",
                         "primary": "#5341cd",
-                        "text-muted": "#636E72",
+                        "text-muted": "#475569",
                         "secondary": "#873da6",
                         "inverse-on-surface": "#eff1f2",
                         "on-primary": "#ffffff",
@@ -75,15 +74,15 @@
                         "background": "#f8fafb",
                         "inverse-surface": "#2e3132",
                         "outline-variant": "#c8c4d7",
-                        "primary-container": "#6c5ce7",
-                        "badge-gold": "#F1C40F",
+                        "primary-container": "#5341cd",
+                        "badge-gold": "#92400E",
                         "surface-dim": "#d8dadb",
                         "on-primary-fixed": "#160066",
                         "on-secondary-fixed-variant": "#6c228c",
                         "surface-container-low": "#f2f4f5",
                         "on-tertiary": "#ffffff",
                         "on-secondary": "#ffffff",
-                        "badge-sky": "#0984E3",
+                        "badge-sky": "#0369A1",
                         "secondary-fixed": "#f8d8ff",
                         "surface-container-high": "#e6e8e9",
                         "on-error-container": "#93000a",
@@ -143,52 +142,65 @@
     </script>
     @stack('styles')
 </head>
-<body class="bg-surface-body font-body-md text-on-surface antialiased">
+<body class="bg-surface-body font-body-md text-on-surface antialiased overflow-x-hidden">
+    @php
+        $navStudent = \App\Models\User::where('role', 'mahasiswa')->orderByDesc('xp')->first();
+        $navInitials = $navStudent ? collect(explode(' ', $navStudent->name))->map(fn($w) => strtoupper(substr($w, 0, 1)))->take(2)->implode('') : 'CQ';
+    @endphp
 
-    <!-- Left Floating Clean & Soft UI Sidebar -->
-    <aside class="fixed left-6 top-6 bottom-6 w-[280px] bg-surface-sidebar rounded-[24px] z-50 flex flex-col p-6 shadow-[0_4px_20px_-2px_rgba(108,92,231,0.04)]">
-        <a href="{{ url('/dashboard') }}" class="flex items-center gap-3 px-2 mb-6 text-decoration-none">
-            <img alt="CampusQuest Logo" class="h-8 w-auto object-contain" src="https://lh3.googleusercontent.com/aida/AEtjO1WRpogggiZWjJE1BtUpDxGM5gkoKJNEKnWFxIbLuOPPpr1t2tswsIMX_Qm3HHga6FLOy7tnv4zBsT1k4Qhkt2AyGA3NQBRHhCuHa8_nVWDaeOGf-NvJ5R94BWQFzJ7ZjUHQSjuLAiBRbm52JOM7aVrrMxlSBg7txZP-cVLfjk_81tSP_t7EQtZRFo_okk4pvLiD6w4uwqOJFwLp5q7VHMRhzs6Gjxk4DIMi_CdtFQV4"/>
-            <span class="font-headline-sm text-headline-sm text-text-primary tracking-tight">CampusQuest</span>
-        </a>
+    <div id="mobileSidebarBackdrop" onclick="closeMobileSidebar()" class="fixed inset-0 bg-black/40 z-40 hidden lg:hidden transition-opacity" aria-hidden="true"></div>
 
-        <nav class="flex-1 flex flex-col gap-1.5 overflow-y-auto">
-            <a class="flex items-center gap-3.5 px-4 py-2.5 rounded-full transition-all font-label-lg text-label-lg {{ request()->is('dashboard*') ? 'bg-primary-container text-on-primary-container shadow-md' : 'text-on-surface-variant hover:bg-pastel-lavender-start hover:text-primary' }}" href="{{ url('/dashboard') }}">
-                <span class="material-symbols-outlined text-[20px]">grid_view</span>
+    <aside id="appSidebar" aria-label="Navigasi Utama" class="fixed left-4 lg:left-6 top-4 lg:top-6 bottom-4 lg:bottom-6 w-[280px] max-w-[calc(100vw-2rem)] bg-surface-sidebar rounded-[24px] z-50 flex flex-col p-6 shadow-[0_4px_20px_-2px_rgba(108,92,231,0.08)] -translate-x-[120%] lg:translate-x-0 transition-transform duration-300">
+        <div class="flex items-center justify-between px-2 mb-6">
+            <a href="{{ route('dashboard') }}" class="flex items-center gap-3 text-decoration-none">
+                <x-campusquest-logo />
+                <div class="flex flex-col">
+                    <span class="font-headline-sm text-headline-sm text-text-primary tracking-tight leading-tight">CampusQuest</span>
+                    <span class="font-label-sm text-label-sm text-text-muted">Telkom University</span>
+                </div>
+            </a>
+            <button type="button" onclick="closeMobileSidebar()" aria-label="Tutup Menu Navigasi" class="lg:hidden min-w-[44px] min-h-[44px] rounded-full hover:bg-surface-card flex items-center justify-center text-text-primary">
+                <span class="material-symbols-outlined text-[20px]" aria-hidden="true">close</span>
+            </button>
+        </div>
+
+        <nav class="flex-1 flex flex-col gap-1.5 overflow-y-auto" aria-label="Menu Modul CampusQuest">
+            <a class="flex items-center gap-3.5 px-4 py-2.5 min-h-[44px] rounded-full transition-all font-label-lg text-label-lg {{ request()->is('dashboard*') ? 'bg-primary-container text-on-primary-container shadow-md' : 'text-on-surface-variant hover:bg-pastel-lavender-start hover:text-primary' }}" href="{{ route('dashboard') }}">
+                <span class="material-symbols-outlined text-[20px]" aria-hidden="true">grid_view</span>
                 <span>Dashboard</span>
             </a>
-            <a class="flex items-center gap-3.5 px-4 py-2.5 rounded-full transition-all font-label-lg text-label-lg {{ request()->is('missions*') ? 'bg-primary-container text-on-primary-container shadow-md' : 'text-on-surface-variant hover:bg-pastel-lavender-start hover:text-primary' }}" href="{{ url('/missions') }}">
-                <span class="material-symbols-outlined text-[20px]">explore</span>
+            <a class="flex items-center gap-3.5 px-4 py-2.5 min-h-[44px] rounded-full transition-all font-label-lg text-label-lg {{ request()->is('missions*') ? 'bg-primary-container text-on-primary-container shadow-md' : 'text-on-surface-variant hover:bg-pastel-lavender-start hover:text-primary' }}" href="{{ route('missions.index') }}">
+                <span class="material-symbols-outlined text-[20px]" aria-hidden="true">explore</span>
                 <span>Katalog Quest</span>
             </a>
-            <a class="flex items-center gap-3.5 px-4 py-2.5 rounded-full transition-all font-label-lg text-label-lg {{ request()->is('submissions*') ? 'bg-primary-container text-on-primary-container shadow-md' : 'text-on-surface-variant hover:bg-pastel-lavender-start hover:text-primary' }}" href="{{ url('/submissions') }}">
-                <span class="material-symbols-outlined text-[20px]">upload_file</span>
+            <a class="flex items-center gap-3.5 px-4 py-2.5 min-h-[44px] rounded-full transition-all font-label-lg text-label-lg {{ request()->is('submissions*') ? 'bg-primary-container text-on-primary-container shadow-md' : 'text-on-surface-variant hover:bg-pastel-lavender-start hover:text-primary' }}" href="{{ route('submissions.index') }}">
+                <span class="material-symbols-outlined text-[20px]" aria-hidden="true">upload_file</span>
                 <span>Pengajuan Misi</span>
             </a>
-            <a class="flex items-center gap-3.5 px-4 py-2.5 rounded-full transition-all font-label-lg text-label-lg {{ request()->is('leaderboard*') ? 'bg-primary-container text-on-primary-container shadow-md' : 'text-on-surface-variant hover:bg-pastel-lavender-start hover:text-primary' }}" href="{{ url('/leaderboard') }}">
-                <span class="material-symbols-outlined text-[20px]">emoji_events</span>
+            <a class="flex items-center gap-3.5 px-4 py-2.5 min-h-[44px] rounded-full transition-all font-label-lg text-label-lg {{ request()->is('leaderboard*') ? 'bg-primary-container text-on-primary-container shadow-md' : 'text-on-surface-variant hover:bg-pastel-lavender-start hover:text-primary' }}" href="{{ route('leaderboard') }}">
+                <span class="material-symbols-outlined text-[20px]" aria-hidden="true">emoji_events</span>
                 <span>Leaderboard</span>
             </a>
-            <a class="flex items-center gap-3.5 px-4 py-2.5 rounded-full transition-all font-label-lg text-label-lg {{ request()->is('portfolio*') ? 'bg-primary-container text-on-primary-container shadow-md' : 'text-on-surface-variant hover:bg-pastel-lavender-start hover:text-primary' }}" href="{{ url('/portfolio') }}">
-                <span class="material-symbols-outlined text-[20px]">folder_shared</span>
+            <a class="flex items-center gap-3.5 px-4 py-2.5 min-h-[44px] rounded-full transition-all font-label-lg text-label-lg {{ request()->is('portfolio*') ? 'bg-primary-container text-on-primary-container shadow-md' : 'text-on-surface-variant hover:bg-pastel-lavender-start hover:text-primary' }}" href="{{ route('portfolio.index') }}">
+                <span class="material-symbols-outlined text-[20px]" aria-hidden="true">folder_shared</span>
                 <span>Portofolio Digital</span>
             </a>
-            <a class="flex items-center gap-3.5 px-4 py-2.5 rounded-full transition-all font-label-lg text-label-lg {{ request()->is('teams*') ? 'bg-primary-container text-on-primary-container shadow-md' : 'text-on-surface-variant hover:bg-pastel-lavender-start hover:text-primary' }}" href="{{ url('/teams') }}">
-                <span class="material-symbols-outlined text-[20px]">group</span>
+            <a class="flex items-center gap-3.5 px-4 py-2.5 min-h-[44px] rounded-full transition-all font-label-lg text-label-lg {{ request()->is('teams*') ? 'bg-primary-container text-on-primary-container shadow-md' : 'text-on-surface-variant hover:bg-pastel-lavender-start hover:text-primary' }}" href="{{ route('teams.index') }}">
+                <span class="material-symbols-outlined text-[20px]" aria-hidden="true">group</span>
                 <span>Tim &amp; Kolaborasi</span>
             </a>
 
             <div class="my-2 border-t border-outline-variant/40"></div>
 
-            <a class="flex items-center justify-between px-4 py-2.5 rounded-full transition-all font-label-lg text-label-lg {{ request()->is('admin*') ? 'bg-primary-container text-on-primary-container shadow-md' : 'text-on-surface-variant hover:bg-pastel-lavender-start hover:text-primary' }}" href="{{ url('/admin/submissions') }}">
+            <a class="flex items-center justify-between px-4 py-2.5 min-h-[44px] rounded-full transition-all font-label-lg text-label-lg {{ request()->is('admin*') ? 'bg-primary-container text-on-primary-container shadow-md' : 'text-on-surface-variant hover:bg-pastel-lavender-start hover:text-primary' }}" href="{{ route('admin.submissions') }}">
                 <div class="flex items-center gap-3.5">
-                    <span class="material-symbols-outlined text-[20px]">verified_user</span>
+                    <span class="material-symbols-outlined text-[20px]" aria-hidden="true">verified_user</span>
                     <span>Panel Verifikator</span>
                 </div>
                 <span class="px-2 py-0.5 rounded-full bg-pastel-lavender-start text-badge-violet font-label-sm text-label-sm">Admin</span>
             </a>
-            <a class="flex items-center gap-3.5 px-4 py-2.5 rounded-full text-on-surface-variant hover:bg-error-container/50 hover:text-error transition-all font-label-lg text-label-lg" href="{{ url('/login') }}">
-                <span class="material-symbols-outlined text-[20px]">logout</span>
+            <a class="flex items-center gap-3.5 px-4 py-2.5 min-h-[44px] rounded-full text-on-surface-variant hover:bg-error-container/50 hover:text-error transition-all font-label-lg text-label-lg" href="{{ route('login') }}">
+                <span class="material-symbols-outlined text-[20px]" aria-hidden="true">logout</span>
                 <span>Halaman Login / SSO</span>
             </a>
         </nav>
@@ -197,58 +209,81 @@
             <div class="bg-surface-card rounded-[18px] p-4 shadow-[0_4px_20px_-2px_rgba(108,92,231,0.04)] flex items-center justify-between">
                 <div class="flex items-center gap-3">
                     <div class="w-9 h-9 rounded-full bg-pastel-lavender-start flex items-center justify-center text-primary">
-                        <span class="material-symbols-outlined text-[18px]">school</span>
+                        <span class="material-symbols-outlined text-[18px]" aria-hidden="true">school</span>
                     </div>
                     <div>
-                        <p class="font-label-md text-label-md text-text-primary leading-tight">Kampus Merdeka</p>
+                        <p class="font-label-md text-label-md text-text-primary leading-tight">S1 Teknologi Informasi</p>
                         <p class="font-body-sm text-body-sm text-text-muted leading-tight">Kelompok 5 • Tel-U</p>
                     </div>
                 </div>
-                <span class="material-symbols-outlined text-badge-violet text-[18px]">verified</span>
+                <span class="material-symbols-outlined text-badge-violet text-[18px]" aria-hidden="true">verified</span>
             </div>
         </div>
     </aside>
 
-    <!-- Main Viewport Wrapper -->
-    <div class="pl-[328px] pr-6">
-        <!-- Top Floating Header -->
-        <header class="fixed top-6 left-[328px] right-6 h-20 bg-surface-card/90 backdrop-blur-xl rounded-[20px] shadow-[0_4px_20px_-2px_rgba(108,92,231,0.04)] z-40 px-6 flex items-center justify-between gap-4">
-            <div class="flex-1 max-w-md">
-                <div class="relative flex items-center">
-                    <span class="material-symbols-outlined absolute left-3.5 text-text-muted text-[20px]">search</span>
-                    <input class="w-full pl-10 pr-4 py-2 bg-pastel-lavender-start/50 text-text-primary placeholder:text-text-muted rounded-full font-body-md text-body-md outline-none focus:bg-surface-card focus:shadow-[0_0_0_2px_#6C5CE7] transition-all" placeholder="Cari quest, aktivitas, atau rekan tim..." type="text"/>
-                </div>
-            </div>
-            <div class="flex items-center gap-3">
-                <a href="{{ url('/dashboard') }}" class="flex items-center gap-2 px-3.5 py-1.5 bg-gradient-to-r from-pastel-lavender-start to-pastel-lavender-end rounded-full">
-                    <span class="material-symbols-outlined text-primary text-[18px]">bolt</span>
-                    <span class="font-label-md text-label-md text-primary font-bold">Level 3 • 2,450 XP</span>
-                </a>
-                <button aria-label="Notifikasi" class="relative w-10 h-10 rounded-full bg-surface-sidebar hover:bg-pastel-lavender-start flex items-center justify-center text-on-surface-variant transition-colors">
-                    <span class="material-symbols-outlined text-[20px]">notifications</span>
-                    <span class="absolute top-2 right-2 w-2 h-2 rounded-full bg-secondary-container ring-2 ring-surface-card"></span>
+    <div class="pl-4 pr-4 lg:pl-[328px] lg:pr-6">
+        <header class="fixed top-4 lg:top-6 left-4 lg:left-[328px] right-4 lg:right-6 h-20 bg-surface-card/95 backdrop-blur-md rounded-[20px] shadow-[0_4px_20px_-2px_rgba(108,92,231,0.04)] z-30 px-4 lg:px-6 flex items-center justify-between gap-3">
+            <div class="flex items-center gap-3 flex-1 max-w-md">
+                <button type="button" onclick="openMobileSidebar()" aria-label="Buka Menu Navigasi" aria-controls="appSidebar" aria-expanded="false" id="mobileMenuBtn" class="lg:hidden min-w-[44px] min-h-[44px] rounded-full bg-surface-sidebar hover:bg-pastel-lavender-start flex items-center justify-center text-text-primary shrink-0">
+                    <span class="material-symbols-outlined text-[22px]" aria-hidden="true">menu</span>
                 </button>
-                <a href="{{ url('/portfolio') }}" class="flex items-center gap-3 pl-2 py-1 pr-3 rounded-full hover:bg-surface-sidebar/70 transition-colors">
-                    <div class="text-right">
-                        <p class="font-label-md text-label-md text-text-primary leading-tight">Nabila Putri</p>
-                        <p class="font-body-sm text-body-sm text-text-muted leading-tight">Sistem Informasi</p>
+                <form action="{{ route('missions.index') }}" method="GET" class="relative flex items-center w-full" role="search">
+                    <label for="globalSearchInput" class="sr-only">Cari quest, aktivitas, atau rekan tim</label>
+                    <span class="material-symbols-outlined absolute left-3.5 text-text-muted text-[20px]" aria-hidden="true">search</span>
+                    <input id="globalSearchInput" name="q" value="{{ request('q') }}" class="w-full pl-10 pr-4 py-2 bg-pastel-lavender-start/60 text-text-primary placeholder:text-text-muted rounded-xl font-body-md text-body-md focus:bg-surface-card focus:ring-2 focus:ring-primary transition-all" placeholder="Cari quest, aktivitas, atau rekan tim..." type="search"/>
+                </form>
+            </div>
+            <div class="flex items-center gap-2 sm:gap-3 shrink-0">
+                <a href="{{ route('dashboard') }}" class="hidden sm:flex items-center gap-2 px-3.5 py-2 bg-gradient-to-r from-pastel-lavender-start to-pastel-lavender-end rounded-full">
+                    <span class="material-symbols-outlined text-primary text-[18px]" aria-hidden="true">workspace_premium</span>
+                    <span class="font-label-md text-label-md text-primary font-bold">
+                        Level {{ $navStudent->level ?? 8 }} • {{ number_format($navStudent->xp ?? 1950) }} XP
+                    </span>
+                </a>
+                <a href="{{ route('submissions.index') }}" aria-label="Status Pengajuan & Notifikasi" class="relative min-w-[44px] min-h-[44px] rounded-full bg-surface-sidebar hover:bg-pastel-lavender-start flex items-center justify-center text-on-surface-variant transition-colors" title="Lihat Status Pengajuan Misi">
+                    <span class="material-symbols-outlined text-[20px]" aria-hidden="true">notifications</span>
+                    <span class="absolute top-2.5 right-2.5 w-2 h-2 rounded-full bg-primary ring-2 ring-surface-card"></span>
+                </a>
+                <a href="{{ route('portfolio.index') }}" class="flex items-center gap-2.5 pl-2 py-1 pr-2 sm:pr-3 rounded-full hover:bg-surface-sidebar/70 transition-colors">
+                    <div class="text-right hidden md:block">
+                        <p class="font-label-md text-label-md text-text-primary leading-tight">{{ $navStudent->name ?? 'Nathasya Yuan Maharani' }}</p>
+                        <p class="font-body-sm text-body-sm text-text-muted leading-tight">NIM {{ $navStudent->nim ?? '103032400001' }}</p>
                     </div>
-                    <img alt="Profile" class="w-8 h-8 rounded-full object-cover ring-2 ring-border-subtle" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCkWF5l6r2XfAFnoWntyqjfe4vZ99PcAKd6gwJZvkcSwpNZPmwKezEGN1sQBGgpHCUgnRkAjbIA-74VyxTBAM76WRlKpQgIbJRcrUV-6US2qV-iVIhKcS5YdGcFH8uzsS2L2ss4sFkA89GK6NtcZvEMdOSbtfmIhKw3ZYymPQLEvyTjJg-G-gevuni7OE43omSfT84kL-qhaIUbXqeBT6DHSPrE2nXQz-QMsCSRvB0"/>
+                    <div class="w-9 h-9 rounded-full bg-primary text-on-primary flex items-center justify-center font-label-md text-label-md font-bold ring-2 ring-border-subtle shrink-0" aria-hidden="true">
+                        {{ $navInitials }}
+                    </div>
                 </a>
             </div>
         </header>
 
-        <!-- Dynamic Page Content -->
         <main class="relative pt-28 w-full min-h-screen pb-10">
             @yield('content')
         </main>
     </div>
 
-    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js" defer></script>
     <script>
-        $.ajaxSetup({
-            headers: {
-                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+        function openMobileSidebar() {
+            const sidebar = document.getElementById('appSidebar');
+            const backdrop = document.getElementById('mobileSidebarBackdrop');
+            const btn = document.getElementById('mobileMenuBtn');
+            if (sidebar) sidebar.classList.remove('-translate-x-[120%]');
+            if (backdrop) backdrop.classList.remove('hidden');
+            if (btn) btn.setAttribute('aria-expanded', 'true');
+        }
+
+        function closeMobileSidebar() {
+            const sidebar = document.getElementById('appSidebar');
+            const backdrop = document.getElementById('mobileSidebarBackdrop');
+            const btn = document.getElementById('mobileMenuBtn');
+            if (sidebar) sidebar.classList.add('-translate-x-[120%]');
+            if (backdrop) backdrop.classList.add('hidden');
+            if (btn) btn.setAttribute('aria-expanded', 'false');
+        }
+
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                closeMobileSidebar();
             }
         });
     </script>

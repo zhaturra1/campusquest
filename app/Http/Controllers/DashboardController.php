@@ -2,32 +2,35 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Badge;
+use App\Models\Mission;
+use App\Models\Submission;
+use App\Models\User;
+
+/**
+ * EPIC 2: Sistem Gamifikasi - XP, Level & Badge
+ * PIC: Nathasya Yuan Maharani (103032400001)
+ */
 class DashboardController extends Controller
 {
     public function index()
     {
-        $user = [
-            'name' => 'Igor Simanjuntak',
-            'faculty' => 'Fakultas Informatika',
-            'level' => 5,
-            'xp' => 720,
-            'next_xp' => 1000,
-            'rank' => 3,
-            'missions_done' => 12,
-        ];
+        $student = User::with('badges')->where('role', 'mahasiswa')->orderByDesc('xp')->first();
+        $allBadges = Badge::all();
+        $activeMissions = Mission::where('is_active', true)->take(3)->get();
+        $recentSubmissions = Submission::with(['user', 'mission'])->latest()->take(4)->get();
+        $totalApproved = Submission::where('status', 'Disetujui')->count();
+        $studentRank = User::where('role', 'mahasiswa')
+            ->where('xp', '>', $student ? $student->xp : 0)
+            ->count() + 1;
 
-        $badges = [
-            ['name' => 'Pemula', 'icon' => '🌱'],
-            ['name' => 'Aktif Seminar', 'icon' => '🎤'],
-            ['name' => 'Juara Lomba', 'icon' => '🏆'],
-        ];
-
-        $activities = [
-            ['title' => 'Seminar Nasional AI', 'status' => 'Disetujui', 'xp' => 100],
-            ['title' => 'Lomba Hackathon', 'status' => 'Menunggu', 'xp' => 300],
-            ['title' => 'Bakti Sosial Desa', 'status' => 'Ditolak', 'xp' => 150],
-        ];
-
-        return view('dashboard', compact('user', 'badges', 'activities'));
+        return view('dashboard', compact(
+            'student',
+            'allBadges',
+            'activeMissions',
+            'recentSubmissions',
+            'totalApproved',
+            'studentRank'
+        ));
     }
 }
