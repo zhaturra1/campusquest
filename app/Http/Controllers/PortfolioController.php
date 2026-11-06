@@ -29,7 +29,7 @@ class PortfolioController extends Controller
             ->where('status', 'Disetujui')
             ->latest('validated_at')
             ->get();
-
+// wowww//
         return view('portfolio.index', compact('student', 'students', 'verifiedSubmissions'));
     }
 }
